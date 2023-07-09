@@ -39,3 +39,16 @@ ansible-playbook playbooks/airflow_setup.yml -e "host_group=airflow_dev" -vv
 ```bash
 ansible-playbook playbooks/airflow_setup.yml -e "host_group=airflow_dev airflow_setup_state=absent" -vv
 ```
+
+
+
+## Systemd services to start/stop/restart webserver and scheduler
+
+### Start webserver 
+```bash
+systemctl start airflow
+```
+### Start scheduler
+```bash
+systemctl start airflow-scheduler
+```
