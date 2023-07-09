@@ -9,7 +9,7 @@ airflow_default_users:
     lastname: admin
     password: admin
 
-airflow_setup_state: "present"
+airflow_setup_state: "present" #set it to absent for uninstallation
 
 # CheckMK common variables with defaults
 checkmk_version: 2.1.0p30 # Compatible version for ubuntu 18.04 (https://checkmk.com/download/archive?_gl=1*yx5sdp*_ga*MTA1ODQxMzQwMi4xNjg4MzI3NTEy*_ga_BMKR502ZHL*MTY4ODMyNzUxMS4xLjEuMTY4ODMyNzk1NC4zNy4wLjA.#checkmk-2.1.0)
