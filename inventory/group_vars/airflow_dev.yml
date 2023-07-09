@@ -1,7 +1,7 @@
 ---
 airflow_environment_name: "dev"
 
-airflow_database_type: "sqllite"
+airflow_database_type: "postgresql"
 
 airflow_database_name: "barclays_uat"
 airflow_database_port: "5432"
