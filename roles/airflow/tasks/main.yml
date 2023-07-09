@@ -106,6 +106,7 @@
   systemd:
     name: airflow
     state: started
+    enabled: true
   when:
     - airflow_setup_state == "present"
 
@@ -113,6 +114,7 @@
   systemd:
     name: airflow-scheduler
     state: started
+    enabled: true
   when:
     - airflow_setup_state == "present"
 
