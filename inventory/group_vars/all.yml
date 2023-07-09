@@ -1,0 +1,19 @@
+---
+# Airflow common variables with defaults
+airflow_web_port: 8080
+airflow_home: "/home/ubuntu/airflow"
+airflow_default_users:
+  - username: admin
+    email: admin@gmail.com
+    firstname: admin
+    lastname: admin
+    password: admin
+
+airflow_setup_state: "present"
+
+# CheckMK common variables with defaults
+checkmk_version: 2.1.0p30 # Compatible version for ubuntu 18.04 (https://checkmk.com/download/archive?_gl=1*yx5sdp*_ga*MTA1ODQxMzQwMi4xNjg4MzI3NTEy*_ga_BMKR502ZHL*MTY4ODMyNzUxMS4xLjEuMTY4ODMyNzk1NC4zNy4wLjA.#checkmk-2.1.0)
+checkmk_os_version: "bionic_amd64" #Ubuntu 18.04
+checkmk_site_name: "test1_site"
+checkmk_setup_state: "present"
+
