@@ -2,7 +2,9 @@
 - name: Install postgresql
   include_tasks: 
     file: postgresql.yml
-  when: airflow_environment_name == "prod" 
+  when: 
+    - airflow_environment_name == "prod" 
+    - airflow_setup_state == "present"
 
 - name: Create airflow home directory 
   file:
