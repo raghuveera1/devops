@@ -32,9 +32,7 @@ executor = LocalExecutor
 # More information here:
 # http://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html#database-uri
 #sql_alchemy_conn = sqlite:////home/ubuntu/airflow/airflow.db
-{% if airflow_database_type == "postgresql" and airflow_environment_name == "prod" %}
-sql_alchemy_conn = postgresql+psycopg2://{{ airflow_database_username }}:{{ airflow_database_password }}@{{ airflow_database_host }}:{{ airflow_database_port }}/{{ airflow_database_name }}
-{% elif airflow_database_type == "postgresql" and airflow_environment_name == "dev" %}
+{% if airflow_database_type == "postgresql" %}
 sql_alchemy_conn = postgresql+psycopg2://{{ airflow_database_username }}:{{ airflow_database_password }}@{{ airflow_database_host }}:{{ airflow_database_port }}/{{ airflow_database_name }}
 {% else %}
 sql_alchemy_conn = sqlite:///{{ airflow_home }}/airflow.db
