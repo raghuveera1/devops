@@ -24,17 +24,10 @@
   become_user: postgres
   when: not _r_postgres_data.stat.exists
 
-- name: Copy pg_hba.conf file 
-  copy:
-    src: pg_hba.conf
-    dest: "/etc/postgresql/{{ airflow_postgresql_version }}/main/pg_hba.conf"
-    owner: postgres
-    group: postgres
-
 - name: Start and enable service
   systemd:
     name: postgresql
-    state: restarted
+    state: started
     enabled: true
 
 - name: Create superuser
@@ -47,3 +40,15 @@
           fi
   become: true
   become_user: postgres
+
+- name: Copy pg_hba.conf file 
+  copy:
+    src: pg_hba.conf
+    dest: "/etc/postgresql/{{ airflow_postgresql_version }}/main/pg_hba.conf"
+    owner: postgres
+    group: postgres
+
+- name: Start and enable service
+  systemd:
+    name: postgresql
+    state: restarted
