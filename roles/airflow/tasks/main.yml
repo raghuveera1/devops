@@ -116,14 +116,6 @@
   when:
     - airflow_setup_state == "present"
 
-- name: Start airflow scheduler
-  shell: |
-         airflow scheduler -D
-  environment:
-    AIRFLOW_HOME: "{{ airflow_home }}"
-  when:
-    - airflow_setup_state == "present"
-
 - name: Create Airflow user
   command: "airflow users create --role Admin --username {{ item.username }} --email {{ item.email }} --firstname {{ item.firstname }} --lastname {{ item.lastname }} --password {{ item.password }}"
   environment:
