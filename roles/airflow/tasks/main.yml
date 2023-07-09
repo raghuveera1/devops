@@ -102,7 +102,7 @@
   when:
     - airflow_setup_state == "present"
 
-- name: Start airflow webserver using systemd service script 
+- name: Start airflow webserver using systemd service script & auto start on server startup
   systemd:
     name: airflow
     state: started
@@ -110,7 +110,7 @@
   when:
     - airflow_setup_state == "present"
 
-- name: Start airflow scheduler using systemd service script
+- name: Start airflow scheduler using systemd service script & auto start on server startup
   systemd:
     name: airflow-scheduler
     state: started
