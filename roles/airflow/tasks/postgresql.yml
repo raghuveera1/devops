@@ -1,7 +1,7 @@
 - name: Install packages
   apt:
     name:
-      - "postgresql-{{ postgresql_version }}"
+      - "postgresql-{{ airflow_postgresql_version }}"
       - postgresql-contrib
       - libpq-dev
       - python3-psycopg2
@@ -9,17 +9,17 @@
 
 - name: Check if PostgreSQL is initialized
   stat:
-    path: "{{ postgresql_data_dir }}/pg_hba.conf"
+    path: "{{ airflow_postgresql_data_dir }}/pg_hba.conf"
   register: _r_postgres_data
 
 - name: Empty data dir
   file:
-    path: "{{ postgresql_data_dir }}"
+    path: "{{ airflow_postgresql_data_dir }}"
     state: absent
   when: not _r_postgres_data.stat.exists
 
 - name: Initialize PostgreSQL
-  shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  shell: "{{ airflow_postgresql_bin_path }}/initdb -D {{ airflow_postgresql_data_dir }}"
   become: true
   become_user: postgres
   when: not _r_postgres_data.stat.exists
@@ -27,7 +27,7 @@
 - name: Copy pg_hba.conf file 
   copy:
     src: pg_hba.conf
-    dest: /etc/postgresql/10/main/pg_hba.conf 
+    dest: "/etc/postgresql/{{ airflow_postgresql_version }}/main/pg_hba.conf"
     owner: postgres
     group: postgres
 

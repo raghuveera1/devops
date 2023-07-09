@@ -1,4 +1,9 @@
 ---
+- name: Install postgresql
+  include_tasks: 
+    file: postgresql.yml
+  when: airflow_environment_name == "prod" 
+
 - name: Create airflow home directory 
   file:
     path: "{{ airflow_home }}"
@@ -29,21 +34,21 @@
   when: 
     - airflow_database_type == "sqllite" 
 
-      #- name: Install apache-airflow
-      #  pip:
-      #    name: "apache-airflow[{{ airflow_database_type }}]=={{ airflow_version }}"
-      #    executable: pip3
-      #    extra_args: "{% if airflow_setup_state == 'present' %}--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ _f_airflow_python_version }}.txt --ignore-installed{% endif %}"
-      #    state: "{{ airflow_setup_state }}"
-      #  when:
-      #    - airflow_database_type != "sqllite"
-      #      
-      #- name: Install apache-airflow-providers-ssh
-      #  pip:
-      #    name: apache-airflow-providers-ssh
-      #    state: present
-      #    executable: pip
-      #  state: "{{ airflow_setup_state }}"
+- name: Install apache-airflow
+  pip:
+    name: "apache-airflow[{{ airflow_database_type }}]=={{ airflow_version }}"
+    executable: pip3
+    extra_args: "{% if airflow_setup_state == 'present' %}--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ _f_airflow_python_version }}.txt --ignore-installed{% endif %}"
+    state: "{{ airflow_setup_state }}"
+  when:
+    - airflow_database_type != "sqllite"
+      
+- name: Install apache-airflow-providers-ssh
+  pip:
+    name: apache-airflow-providers-ssh
+    state: present
+    executable: pip
+  state: "{{ airflow_setup_state }}"
 
 - name: Check if port {{ airflow_web_port }} is listening
   wait_for:
@@ -53,6 +58,15 @@
     msg: "Timeout waiting for {{ airflow_web_port }} to respond"
   register: _r_airflow_web_port
   ignore_errors: yes
+  when:
+    - airflow_setup_state == "present"
+
+- name: Copy custom airflow configuration file to airflow home
+  template:
+    src: "airflow.cfg.j2"
+    dest: "{{ airflow_home }}/airflow.cfg"
+    mode: 0640
+  register: _r_airflow_template
   when:
     - airflow_setup_state == "present"
 
@@ -66,22 +80,7 @@
     - _r_airflow_web_port.failed
     - airflow_setup_state == "present"
 
-- name: Copy custom airflow configuration file to airflow home 
-  template: 
-    src: "airflow.cfg.j2"
-    dest: "{{ airflow_home }}/airflow.cfg"
-    mode: 0640
-  register: _r_airflow_template
-  when:
-    - airflow_setup_state == "present"
-
-- name: _r_airflow_template
-  debug: 
-    msg: "{{ _r_airflow_template }}"
-  when:
-    - airflow_setup_state == "present"
-
-- name: Create airflow systemd script     
+- name: Create airflow webserver systemd script     
   template: 
     src: "airflow.service.j2"
     dest: "/lib/systemd/system/airflow.service"
@@ -89,6 +88,14 @@
   when:
     - airflow_setup_state == "present"
 
+- name: Create airflow scheduler systemd script
+  template:
+    src: "airflow-scheduler.service.j2"
+    dest: "/lib/systemd/system/airflow-scheduler.service"
+    mode: 0755
+  when:
+    - airflow_setup_state == "present"
+      
 - name: Daemon reload after adding a new service script 
   systemd:
     daemon_reload: true
@@ -101,14 +108,13 @@
     state: started
   when:
     - airflow_setup_state == "present"
-    #- name: Start airflow webserver
-    #  shell: |
-    #         airflow webserver -p {{ airflow_web_port }} -D --pid {{ airflow_home }}/airflow.pid
-    #  environment:
-    #    AIRFLOW_HOME: "{{ airflow_home }}"
-    #  when: 
-    #    - _r_airflow_web_port.failed
-    #    - airflow_setup_state == "present"
+
+- name: Start airflow webserver using systemd service script
+  systemd:
+    name: airflow-scheduler
+    state: started
+  when:
+    - airflow_setup_state == "present"
 
 - name: Start airflow scheduler
   shell: |

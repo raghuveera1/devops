@@ -1,7 +1,7 @@
 ---
 # Airflow common variables with defaults
 airflow_web_port: 8080
-airflow_home: "/root/airflow"
+airflow_home: "/home/ubuntu/airflow"
 airflow_default_users:
   - username: admin
     email: admin@gmail.com
