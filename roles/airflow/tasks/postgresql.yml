@@ -32,10 +32,10 @@
 
 - name: Create superuser
   shell: |
-          echo "CREATE USER {{ airflow_database_username }} WITH PASSWORD {{ airflow_database_password }} CREATEDB" > /tmp/create_user.sql
+          echo "ALTER USER {{ airflow_database_username }} WITH PASSWORD {{ airflow_database_password }} CREATEDB" > /tmp/create_user.sql
           export PGPASSWORD={{ airflow_database_password }}
           psql -U {{ airflow_database_username }} -w -f /tmp/create_user.sql
-          if [[ $? == 1 ]]; then 
+          if [ $? -eq 0 ]; then
             psql -f /tmp/create_user.sql
           fi
   become: true
