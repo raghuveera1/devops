@@ -7,7 +7,7 @@ airflow_web_port: 8080
 airflow_setup_state: "present" #To uninstall set this value to "absent"
 
 airflow_timezone: "EST"
-airflow_database_type: "sqllite"
+airflow_database_type: "postgresql"
 
 # Below variable needed when external database is used as airflow backend
 airflow_database_name: "postgres"
