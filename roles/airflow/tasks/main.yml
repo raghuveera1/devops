@@ -27,7 +27,7 @@
 - set_fact:
    _f_airflow_python_version: "{% if airflow_python_version != '' %}{{ airflow_python_version }}{% else %}{{ _r_python_version.stdout }}{% endif %}"
 
-- name: Install apache-airflow
+- name: Install/Uninstall apache-airflow
   pip:
     name: "apache-airflow=={{ airflow_version }}"
     executable: pip3
@@ -36,7 +36,7 @@
   when: 
     - airflow_database_type == "sqllite" 
 
-- name: Install apache-airflow
+- name: Install/Uninstall apache-airflow
   pip:
     name: "apache-airflow[{{ airflow_database_type }}]=={{ airflow_version }}"
     executable: pip3
@@ -45,7 +45,7 @@
   when:
     - airflow_database_type != "sqllite"
       
-- name: Install apache-airflow-providers-ssh
+- name: Install/Uninstall apache-airflow-providers-ssh
   pip:
     name: apache-airflow-providers-ssh
     state: "{{ airflow_setup_state }}"
