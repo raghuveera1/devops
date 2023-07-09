@@ -26,5 +26,5 @@ airflow_default_users:
 
 #Database details
 airflow_postgresql_version: "10"
-airflow_ostgresql_bin_path: "/usr/lib/postgresql/{{ postgresql_version }}/bin"
-airflow_postgresql_data_dir: "/var/lib/postgresql/{{ postgresql_version }}/main"
+airflow_ostgresql_bin_path: "/usr/lib/postgresql/{{ airflow_postgresql_version }}/bin"
+airflow_postgresql_data_dir: "/var/lib/postgresql/{{ airflow_postgresql_version }}/main"
