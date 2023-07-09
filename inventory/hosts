@@ -1,0 +1,5 @@
+[airflow_prod]
+localhost
+
+[airflow_dev]
+localhost

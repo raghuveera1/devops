@@ -1,0 +1,10 @@
+---
+airflow_environment_name: "prod"
+
+airflow_database_type: "postgresql"
+
+airflow_database_name: "postgres"
+airflow_database_port: "5432"
+airflow_database_host: "localhost"
+airflow_database_username: "postgres"
+airflow_database_password: "admin"

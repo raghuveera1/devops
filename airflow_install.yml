@@ -1,0 +1,203 @@
+---
+
+- name: Install Apache Airflow and dependencies
+
+  hosts: all
+
+  become: true
+
+  vars:
+
+    airflow_home: "~/airflow"
+
+    airflow_user:
+
+      username: admin
+
+      email: admin@gmail.com
+
+      firstname: admin
+
+      lastname: admin
+
+      password: admin
+
+    checkmk_version: 2.1.0p30 # Compatible version for ubuntu 18.04 (https://checkmk.com/download/archive?_gl=1*yx5sdp*_ga*MTA1ODQxMzQwMi4xNjg4MzI3NTEy*_ga_BMKR502ZHL*MTY4ODMyNzUxMS4xLjEuMTY4ODMyNzk1NC4zNy4wLjA.#checkmk-2.1.0)
+
+    checkmk_os_version: "bionic_amd64" #Ubuntu 18.04
+
+    checkmk_site_name: "test1_site"
+
+  tasks:
+
+    - name: Install software-properties-common
+
+      apt:
+
+        name: software-properties-common
+
+        state: present
+
+ 
+
+    - name: Install python3-pip
+
+      apt:
+
+        name: python3-pip
+
+        state: present
+
+ 
+
+    - name: Set AIRFLOW_HOME environment variable
+
+      lineinfile:
+
+        dest: ~/.bashrc
+
+        line: "export AIRFLOW_HOME={{ airflow_home }}"
+
+        insertafter: EOF
+
+        create: yes
+
+ 
+
+    - name: Get Python version
+
+      shell: |
+
+             python3 --version | cut -d " " -f 2 | cut -d "." -f 1-2
+
+      register: _r_python_version
+
+ 
+
+    - set_fact:
+
+       python_version: "{{ _r_python_version.stdout }}"
+
+       airflow_version: 2.2.4
+
+ 
+
+    - name: Upgrade pip to latest version
+
+      pip:
+
+        name: pip
+
+        state: latest
+
+        executable: pip3
+
+ 
+
+    - name: Install apache-airflow
+
+      pip:
+
+       name: "apache-airflow=={{ airflow_version }}"
+
+       executable: pip3
+
+       extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version }}.txt --ignore-installed"
+
+ 
+
+    - name: Install apache-airflow-providers-ssh
+
+      pip:
+
+        name: apache-airflow-providers-ssh
+
+        state: present
+
+        executable: pip
+
+ 
+
+    - name: Initiate airflow db
+
+      shell: |
+
+             export AIRFLOW_HOME=~/airflow
+
+             airflow db init
+
+ 
+
+    - name: Check if port 8080 is listening
+
+      wait_for:
+
+        port: 8080
+
+        delay: 2
+
+        timeout: 5
+
+        msg: "Timeout waiting for 8080 to respond"
+
+      register: _r_airflow_web_port
+
+      ignore_errors: yes
+
+ 
+
+    - name: Start airflow webserver
+
+      shell: |
+
+             airflow webserver -p 8080 -D
+
+      when: _r_airflow_web_port.failed
+
+ 
+
+    - name: Start airflow scheduler
+
+      shell: |
+
+             airflow scheduler -D
+
+    - name: Create Airflow user
+
+      command: "airflow users create --role Admin --username {{ airflow_user.username }} --email {{ airflow_user.email }} --firstname {{ airflow_user.firstname }} --lastname {{ airflow_user.lastname }} --password {{ airflow_user.password }}"
+
+ 
+
+    # Checkmk Installation
+
+    - name: Install checkmk binary
+
+      apt:
+
+        deb: https://download.checkmk.com/checkmk/{{ checkmk_version }}/check-mk-raw-{{ checkmk_version }}_0.{{ checkmk_os_version }}.deb
+
+ 
+
+    - name: Create checkmk site
+
+      shell: |
+
+             omd create {{ checkmk_site_name }}
+
+      register: checkm_site_output
+
+ 
+
+    - name: Print checkmk site creation output from above
+
+      debug:
+
+        msg: "{{ checkm_site_output }}"
+
+ 
+
+    - name: Start checkmk server
+
+      shell: |
+
+              omd start {{ checkmk_site_name }}

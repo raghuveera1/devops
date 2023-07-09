@@ -1,0 +1,38 @@
+- name: Install packages
+  apt:
+    name:
+      - "postgresql-{{ postgresql_version }}"
+      - postgresql-contrib
+      - libpq-dev
+      - python3-psycopg2
+    state: present
+
+- name: Check if PostgreSQL is initialized
+  stat:
+    path: "{{ postgresql_data_dir }}/pg_hba.conf"
+  register: _r_postgres_data
+
+- name: Empty data dir
+  file:
+    path: "{{ postgresql_data_dir }}"
+    state: absent
+  when: not _r_postgres_data.stat.exists
+
+- name: Initialize PostgreSQL
+  shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+  become: true
+  become_user: postgres
+  when: not _r_postgres_data.stat.exists
+
+- name: Start and enable service
+  systemd:
+    name: postgresql
+    state: restarted
+    enabled: true
+
+- name: Create superuser
+  shell: |
+          echo "CREATE USER {{ airflow_database_username }} WITH PASSWORD {{ airflow_database_password }} CREATEDB" > /tmp/create_user.sql
+          psql -p 5433 -f /tmp/create_user.sql
+  become: true
+  become_user: postgres

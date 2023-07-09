@@ -1,0 +1,97 @@
+---
+
+- name: Uninstall Apache Airflow and PostgreSQL
+
+  hosts: all
+
+  become: true
+
+  vars:
+
+    airflow_home: "~/airflow"
+
+    airflow_version: "2.2.4"  # Update Airflow version
+
+    python_version: "3.8"
+
+ 
+
+  tasks:
+
+    - name: Stop Apache Airflow Scheduler
+
+      shell: |
+
+           kill $(cat ~/airflow/airflow-scheduler.pid)
+
+      environment:
+
+        AIRFLOW_HOME: "{{ airflow_home }}"
+
+      ignore_errors: yes  # Ignore errors if the scheduler is not running
+
+ 
+
+    - name: Stop Apache Airflow Webserver
+
+      shell: |
+
+           kill $(ps -o ppid= -p $(cat ~/airflow/airflow-webserver.pid))
+
+      environment:
+
+        AIRFLOW_HOME: "{{ airflow_home }}"
+
+      ignore_errors: yes  # Ignore errors if the webserver is not running
+
+ 
+
+    - name: Uninstall Apache Airflow
+
+      pip:
+
+        name: "apache-airflow=={{ airflow_version }}"
+
+        state: absent
+
+ 
+
+    - name: Uninstall Apache Airflow provider for SSH
+
+      pip:
+
+        name: "apache-airflow-providers-ssh"
+
+        state: absent
+
+ 
+
+    - name: Remove AIRFLOW_HOME environment variable
+
+      lineinfile:
+
+        dest: ~/.bashrc
+
+        state: absent
+
+        regexp: '^export AIRFLOW_HOME='
+
+ 
+
+    - name: Delete Airflow home directory
+
+      file:
+
+        path: "{{ airflow_home }}"
+
+        state: absent
+
+    - name: Uninstall Checkmk Server
+
+      apt:
+
+        name: check-mk-server
+
+        state: absent
+
+        autoremove: yes
