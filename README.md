@@ -26,7 +26,7 @@ ansible-playbook playbooks/airflow_setup.yml -e "host_group=airflow_prod" -vv
 ansible-playbook playbooks/airflow_setup.yml -e "host_group=airflow_prod airflow_setup_state=absent" -vv
 ```
 
-##Dev
+## Dev
 
 ### To install airflow in dev run below command
 
