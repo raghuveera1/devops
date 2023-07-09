@@ -46,7 +46,7 @@
 - name: Install apache-airflow-providers-ssh
   pip:
     name: apache-airflow-providers-ssh
-    state: present
+    state: "{{ airflow_setup_state }}"
     executable: pip
   state: "{{ airflow_setup_state }}"
 
