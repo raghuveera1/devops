@@ -48,7 +48,6 @@
     name: apache-airflow-providers-ssh
     state: "{{ airflow_setup_state }}"
     executable: pip
-  state: "{{ airflow_setup_state }}"
 
 - name: Check if port {{ airflow_web_port }} is listening
   wait_for:
