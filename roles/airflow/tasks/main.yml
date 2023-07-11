@@ -4,6 +4,18 @@
     file: postgresql.yml
   when: airflow_environment_name == "prod" 
 
+- name: Create PostgreSQL database
+  postgresql_db:
+    name: "{{ airflow_database_name }}"
+    login_host: "{{ airflow_database_host }}"
+    login_user: "{{ airflow_database_username }}"
+    login_password: "{{ airflow_database_password }}"
+    encoding: UTF8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+    state: present
+  when: airflow_environment_name == "dev" 
+
 - name: Create airflow home directory 
   file:
     path: "{{ airflow_home }}"
