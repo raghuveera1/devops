@@ -1,0 +1,4 @@
+# Variables for Checkmk installation
+checkmk_version: "2.0.0"  # Change to the desired version
+checkmk_install_path: "/opt/checkmk"
+checkmk_site_name: "mycheckmksite"  # Change to your desired site name

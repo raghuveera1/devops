@@ -1,0 +1,65 @@
+---
+- name: Install Checkmk Agent on Agent Server
+  hosts: agent_server
+  gather_facts: true
+  vars_files:
+    - vars.yml
+  become: true
+  #vars:
+  #  ansible_ssh_common_args: '-o ProxyJump=jump_server_user@jump_server_ip'
+
+  tasks:
+    - name: Download Checkmk agent package
+      get_url:
+        url: "https://example.com/path/to/check_mk_agent.deb"  # Replace with the actual URL
+        dest: /tmp/check_mk_agent.deb
+
+    - name: Install Checkmk agent package
+      apt:
+        deb: /tmp/check_mk_agent.deb
+        state: present
+
+    - name: Install xinetd
+      apt:
+        name: xinetd
+        state: present
+
+    - name: Start xinetd service
+      service:
+        name: xinetd
+        state: started
+
+    - name: Check netstat output
+      command: netstat -lntp
+      register: netstat_output
+
+    - name: Display netstat output
+      debug:
+        var: netstat_output.stdout_lines
+
+    - name: Check systemd status for xinetd
+      command: systemctl status xinetd
+      register: xinetd_status
+
+    - name: Display xinetd status
+      debug:
+        var: xinetd_status.stdout
+
+    - name: Verify Checkmk agent path
+      command: which check_mk_agent
+      register: checkmk_agent_path
+
+    - name: Display Checkmk agent path
+      debug:
+        var: checkmk_agent_path.stdout
+
+    - name: Ensure Checkmk agent is executable
+      file:
+        path: /usr/bin/check_mk_agent
+        mode: '0755'
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted    

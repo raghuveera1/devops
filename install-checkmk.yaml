@@ -1,0 +1,30 @@
+---
+- name: Install Checkmk with OMD
+  hosts: checkmk_servers
+  gather_facts: true
+  vars_files:
+    - vars.yaml
+  become: true
+
+  tasks:
+    - name: Install OMD package
+      apt:
+        name: omd
+        state: present
+
+    - name: Create Checkmk site
+      shell: omd create {{ checkmk_site_name }}
+      register: checkmk_site_output
+
+    - name: Print Checkmk site creation output
+      debug:
+        msg: "{{ checkmk_site_output.stdout }}"
+
+    - name: Start Checkmk server
+      shell: omd start {{ checkmk_site_name }}
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

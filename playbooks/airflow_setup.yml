@@ -1,9 +1,0 @@
-- name: Install and Uinstall airflow on target instances
-  hosts: "{{ host_group }}"
-  #connection: local #For testing locally, comment this line on real envs
-  gather_facts: false
-  become: true
-  become_method: sudo
-  roles:
-    - common
-    - airflow
