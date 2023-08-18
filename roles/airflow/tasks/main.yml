@@ -144,3 +144,24 @@
     - "{{ airflow_default_users }}"
   when:
     - airflow_setup_state == "present"
+
+#newly added script
+
+- name: remove files and folders
+    - file:
+        state: absent
+        path: "{{ airflow_home }}/airflow.db"
+    - file:
+        state: absent
+        path: "{{ airflow_home }}/logs"
+    - file:
+        state: absent
+        path: "{{ airflow_home }}/dags"
+    - file:
+        state: absent
+        path: "{{ airflow_home }}/plugins"
+    - file:
+        state: absent
+        path: "{{ airflow_home }}/airflow.cfg"
+  when:
+    - airflow_setup_state == "present"
