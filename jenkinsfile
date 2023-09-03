@@ -1,0 +1,51 @@
+pipeline {
+    parameters {
+        booleanParam(name: 'restartService1', defaultValue: false, description: 'Restart Service 1')
+        booleanParam(name: 'restartService2', defaultValue: false, description: 'Restart Service 2')
+        booleanParam(name: 'restartService3', defaultValue: false, description: 'Restart Service 3')
+        booleanParam(name: 'startService1', defaultValue: false, description: 'Start Service 1')
+        booleanParam(name: 'startService2', defaultValue: false, description: 'Start Service 2')
+        booleanParam(name: 'startService3', defaultValue: false, description: 'Start Service 3')
+        booleanParam(name: 'stopService1', defaultValue: false, description: 'Stop Service 1')
+        booleanParam(name: 'stopService2', defaultValue: false, description: 'Stop Service 2')
+        booleanParam(name: 'stopService3', defaultValue: false, description: 'Stop Service 3')
+    }
+
+    agent any
+
+    stages {
+        stage('Manage Services') {
+            steps {
+                script {
+                    if (params.restartService1) {
+                        sh "systemctl restart service_1"
+                    }
+                    if (params.restartService2) {
+                        sh "systemctl restart service_2"
+                    }
+                    if (params.restartService3) {
+                        sh "systemctl restart service_3"
+                    }
+                    if (params.startService1) {
+                        sh "systemctl start service_1"
+                    }
+                    if (params.startService2) {
+                        sh "systemctl start service_2"
+                    }
+                    if (params.startService3) {
+                        sh "systemctl start service_3"
+                    }
+                    if (params.stopService1) {
+                        sh "systemctl stop service_1"
+                    }
+                    if (params.stopService2) {
+                        sh "systemctl stop service_2"
+                    }
+                    if (params.stopService3) {
+                        sh "systemctl stop service_3"
+                    }
+                }
+            }
+        }
+    }
+}
